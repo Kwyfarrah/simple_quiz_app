@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import './questions.dart';
-import './answer.dart';
+import './quiz.dart';
 import './exit.dart';
+import './result.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,33 +37,49 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _questionIndex = 0;
-  var questions = [
-      {
-        'questionText': 'Please click your favourite colour.',
-        'answers': ['Black', 'Red', 'Green', 'White'],
-      },
-      {
-        'questionText': 'Please choose the pet you like.',
-        'answers': ['Rabbit', 'Dog', 'Cat', 'Fish'],
-      },
-      {
-        'questionText': 'Do you like this app?',
-        'answers': ['No','No opinion','Yes'],
-      },
-      ];
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Red', 'score': 5},
+        {'text': 'Green', 'score': 3},
+        {'text': 'White', 'score': 1},
+      ],
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'Rabbit', 'score': 3},
+        {'text': 'Snake', 'score': 11},
+        {'text': 'Elephant', 'score': 5},
+        {'text': 'Lion', 'score': 9},
+      ],
+    },
+    {
+      'questionText': 'Who\'s your favorite instructor?',
+      'answers': [
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1},
+      ],
+    },
+  ];
 
-  void _questionChange() {
+  void _questionChange(int score) {
+    _counter += score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
     print(_questionIndex);
+    if (_questionIndex < _questions.length) {
+      print('We have more questions!');
+    } else {
+      print('No more questions!');
+    }
   }
 
-  void _score() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   void _replay() {
     setState(() {
@@ -79,22 +95,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Question(
-              questions[_questionIndex]['questionText'] as String,
-            ),
-            ...(questions[_questionIndex]['answers'] as List<String>)
-                .map((answer) {
-              return Answer(_questionChange,answer);
-            }).toList(),
-            Text(
-              'Current Score: $_counter',
-               style: Theme.of(context).textTheme.headline6
-            ),
-          ],
-        ),
+        child: _questionIndex < _questions.length
+          ? Quiz(
+             questions:_questions,
+             questionChange:_questionChange,
+             questionIndex:_questionIndex,
+             counter:_counter)
+            : Result(_counter)
       ),
       floatingActionButton:Exit(_replay),
       ); // This trailing comma makes auto-formatting nicer for build methods.
